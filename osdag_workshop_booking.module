@@ -1,0 +1,23 @@
+<?php
+/**
+ * Implementation of hook_menu().
+ */
+function osdag_workshop_booking_menu()
+{
+    $items = array();
+    /* PROPOSAL */
+    $items['osdag-workshop-booking/registration'] = array(
+        'title' => 'Osdag Workshop Registration form',
+        'description' => 'Osdag Workshop Registration form',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array(
+            'osdag_workshop_booking_form'
+        ),
+        'access arguments' => array(
+            'workshop booking registration'
+        ),
+        'type' => MENU_NORMAL_ITEM,
+        'file' => 'workshop_registration.inc'
+    );
+    return $items;
+}

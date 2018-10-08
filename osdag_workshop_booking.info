@@ -1,0 +1,5 @@
+name = "Odsag Workshop Booking"
+description = "Osdag project, FOSSEE, IIT Bombay"
+package = FOSSEE IITB
+version = "7.1"
+core = "7.x"
