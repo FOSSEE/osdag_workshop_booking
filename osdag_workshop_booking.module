@@ -14,10 +14,36 @@ function osdag_workshop_booking_menu()
             'osdag_workshop_booking_form'
         ),
         'access arguments' => array(
-            'workshop booking registration'
+            'create workshop proposal'
         ),
         'type' => MENU_NORMAL_ITEM,
         'file' => 'workshop_registration.inc'
     );
     return $items;
+}
+
+/**
+ * Implementation of hook_permission().
+ */
+function osdag_workshop_booking_permission()
+{
+    return array(
+        "create workshop proposal" => array(
+            "title" => t("Workshop Booking Proposal Form"),
+            "description" => t("Workshop Booking Proposal Form.")
+        ),
+    );
+}
+
+function osdag_workshop_booking_list_of_states()
+{
+    $query = db_select('list_states_of_india');
+    $query->fields('list_states_of_india');
+    //$query->orderBy('', '');
+    $states_list = $query->execute();
+    while ($states_list_data = $states_list->fetchObject())
+    {
+        $states[$states_list_data->state] = $states_list_data->state;
+    } //$states_list_data = $states_list->fetchObject()
+    return $states;
 }
