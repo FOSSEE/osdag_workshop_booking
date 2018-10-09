@@ -11,7 +11,7 @@ function osdag_workshop_booking_form($form, &$form_state)
     $query->range(0, 1);
     $proposal_q = $query->execute();
     $proposal_data = $proposal_q->fetchObject();
-    if ($proposal_data)
+  /*  if ($proposal_data)
     {
         if ($proposal_data->approval_status == 0 || $proposal_data->approval_status == 1)
         {
@@ -19,7 +19,7 @@ function osdag_workshop_booking_form($form, &$form_state)
             drupal_goto('');
             return;
         } //$proposal_data->approval_status == 0 || $proposal_data->approval_status == 1
-    } //$proposal_data
+    } //$proposal_data*/
     $form['#attributes'] = array(
         'enctype' => "multipart/form-data"
     );
@@ -71,7 +71,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#value' => $user->mail,
         '#disabled' => TRUE
     );
-    $form['personal_info']['contact_ph'] = array(
+    $form['personal_info']['contact_no'] = array(
         '#type' => 'textfield',
         '#title' => t('Contact No.'),
         '#size' => 30,
@@ -275,6 +275,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#title' => t('Suggested Date(s)'),
         '#tree' => TRUE,
     );
+    $cur_year = date("Y");
     $form['workshop_info']['checklist_group']['suggested_date']['start_date'] = array(
         '#type' => 'date_popup',
         '#title' => t('From Date:'),
@@ -283,7 +284,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#default_value' => '',
         '#date_format' => 'Y-m-d',
         '#date_increment' => 0,
-        '#date_year_range' => '2011:+0',
+        '#date_year_range' => $cur_year.':+0',
         '#datepicker_options' => array(
             'maxDate' => 0
         ),
@@ -296,7 +297,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#default_value' => '',
         '#date_format' => 'Y-m-d',
         '#date_increment' => 0,
-        '#date_year_range' => '2011:+0',
+        '#date_year_range' => $cur_year.':+0',
         '#datepicker_options' => array(
             'maxDate' => 0
         ),
@@ -338,10 +339,124 @@ function osdag_workshop_booking_form($form, &$form_state)
 
 function osdag_workshop_booking_form_validate($form, &$form_state)
 {
-    return;
+    $v = $form_state['values'];
+    if (!preg_match('/^[a-zA-Z \.]*$/', $v['personal_info']['fname']))
+        form_set_error('fname', t('Allowed only characters'));
+    if (!preg_match('/^[a-zA-Z \.]*$/', $v['personal_info']['lname']))
+        form_set_error('lname', t('Allowed only characters'));
+    if (!preg_match('/^[0-9\ \+]{0,15}$/', $v['personal_info']['contact_no']))
+        form_set_error('contact_no', t('Invalid contact number'));
+    if (!preg_match('/^[a-zA-Z \.]*$/', $v['personal_info']['designation']))
+        form_set_error('designation', t('Allowed only characters'));
+    if(strlen($v['organization_info']['institute_company']) < 0 || $v['organization_info']['institute_company'] > 30)
+        form_set_error('institute_company', t('Institute/company name length is invalid'));
+    if(strlen($v['organization_info']['institute_company_address']) < 10 ||
+    strlen($v['organization_info']['institute_company_address']) > 100){
+        $v['organization_info']['institute_company_address'] = trim($v['organization_info']['institute_company_address']);
+        }else{
+            form_set_error('institute_company_address', t('Address length is invalid'));
+        }
+    if($v['workshop_type']['participant_type'] == "Others"){
+        if(trim($v['if_others']) == ""){
+            form_set_error('if_others', t('Please specify others'));
+        }
+    }
+    if($v['workshop_type']['checklist_group']['available_computer'] =="Yes"){
+        if(trim($v['workshop_type']['checklist_group']['if_yes_1']) == ""){
+            form_set_error('if_yes_1', t('Please enter value'));
+        }
+        if($v['workshop_type']['checklist_group']['if_yes_2'] == ""){
+            form_set_error('if_yes_2', t('Please select'));
+        }
+        if($v['workshop_type']['checklist_group']['if_yes_3'] == ""){
+            form_set_error('if_yes_3', t('Please select'));
+        }
+    }
+    if($v['workshop_type']['checklist_group']['available_computer'] =="No"){
+        if($v['workshop_type']['checklist_group']['if_no_1'] == ""){
+            form_set_error('if_yes_1', t('Please select'));
+        }
+        if($v['workshop_type']['checklist_group']['if_no_2'] == ""){
+            form_set_error('if_yes_2', t('Please select'));
+        }
+    }
+    if (!preg_match('/^[0-9]{0,2}$/', $form_state['values']['volunteers']))
+        form_set_error('volunteers', t('Invalid number of volunteer'));
 }
 
 function osdag_workshop_booking_form_submit($form, &$form_state)
 {
-    return;
+    global $user;
+    $v = $form_state['values'];
+    $query = "INSERT INTO 'osdag_workshop_booking_proposal' ('uid', 'title',
+            'fname', 'lname', 'designation', 'email_id', 'contact_no',
+            'institute_company', 'address_of_institute_company', 'org_email',
+            'city_district', 'indian_state', 'pincode', 'workshop_type',
+            'exp_number_of_participent', 'participant_type', 'if_others',
+            'available_computer', 'if_yes_1', 'if_yes_2', 'if_yes_3', 'if_no_1',
+            'if_no_2', 'volunteers', 'from_w_date', 'end_w_date',
+            'travel_arrangement', 'how_did_you_here')
+            VALUES(
+            ':uid', ':title', ':fname', ':lname', ':designation', ':email_id',
+            ':contact_no', ':institute_company',
+            ':address_of_institute_company',':org_email', ':city_district',
+            ':indian_state', ':pincode', ':workshop_type',
+            ':exp_number_of_participent', ':participant_type', ':if_others',
+            ':available_computer', ':if_yes_1', ':if_yes_2', ':if_yes_3',
+            ':if_no_1', ':if_no_2', ':volunteers', ':from_w_date',
+            ':end_w_date', ':travel_arrangement', ':how_did_you_here')";
+
+    $args = array(
+        ':uid' => $user->uid,
+        ':title' => $v['name_title'],
+        ':fname' => $v['fname'],
+        ':lname' => $v['lname'],
+        ':designation' => $v['designation'],
+        ':email_id' => $v['email_id'],
+        ':contact_no' => $v['contact_no'],
+        ':institute_company' => $v['institute_company'],
+        ':address_of_institute_company' => $v['institute_company_address'],
+        ':org_email' => $v['alt_email_id'],
+        ':city_district' => $v['city_district'],
+        ':indian_state' => $v['all_state'],
+        ':pincode' => $v['pincode'],
+        ':workshop_type' => $v['workshop_type'],
+        ':exp_number_of_participent' => $v['expected_number_of_participants'],
+        ':participant_type' => $v['participant_type'],
+        ':if_others' => $v['if_others'],
+        ':available_computer' => $v['available_computer'],
+        ':if_yes_1' => $v['if_yes_1'],
+        ':if_yes_2' => $v['if_yes_2'],
+        ':if_yes_3' => $v['if_yes_3'],
+        ':if_no_1' => $v['if_no_1'],
+        ':if_no_2' => $v['if_no_2'],
+        ':volunteers' => $v['volunteers'],
+        ':from_w_date' => $v['start_date'],
+        ':end_w_date' => $v['end_date'],
+        ':travel_arrangement' => $v['travel_arrangement'],
+        ':how_did_you_here' => $v['how_did_you_here'],
+    );
+        $result = db_query($query, $args, array(
+            'return' => Database::RETURN_INSERT_ID
+        ));
+        /* sending email */
+    $email_to = $user->mail;
+    $from = variable_get('osdag_workshop_booking_from_email', '');
+    $bcc = variable_get('osdag_workshop_booking_bcc_emails', '');
+    $cc = variable_get('osdag_workshop_booking_cc_emails', '');
+    $params['proposal_received']['proposal_id'] = $proposal_id;
+    $params['proposal_received']['user_id'] = $user->uid;
+    $params['proposal_received']['headers'] = array(
+        'From' => $from,
+        'MIME-Version' => '1.0',
+        'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+        'Content-Transfer-Encoding' => '8Bit',
+        'X-Mailer' => 'Drupal',
+        'Cc' => $cc,
+        'Bcc' => $bcc
+    );
+    if (!drupal_mail('osdag_workshop_booking', 'proposal_received', $email_to, language_default(), $params, $from, TRUE))
+        drupal_set_message('Error sending email message.', 'error');
+    drupal_set_message(t('We have received you osdag workshop proposal. We will get back to you soon.'), 'status');
+    drupal_goto('');
 }
