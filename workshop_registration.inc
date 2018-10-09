@@ -111,6 +111,19 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#maxlength' => 50,
         '#required' => TRUE
     );
+    $form['organization_info']['all_state'] = array(
+        '#type' => 'select',
+        '#title' => t('State'),
+        '#options' => osdag_workshop_booking_list_of_states(),
+        '#validated' => TRUE,
+        '#states' => array(
+            'visible' => array(
+                ':input[name="country"]' => array(
+                    'value' => 'India'
+                )
+            )
+        )
+    );
     $form['organization_info']['pincode'] = array(
         '#type' => 'textfield',
         '#title' => t('Pincode'),
@@ -308,9 +321,27 @@ function osdag_workshop_booking_form($form, &$form_state)
                             "Word of mouth" => "Word of mouths"),
         '#required' => TRUE
     );
+    $form['term_and_conditions'] = array(
+        '#type' => 'checkboxes',
+        '#title' => t('Terms And Conditions'),
+        '#options' => array(
+            'status' => t('<a href="term-and-conditions" target="_blank">I agree to the Terms and Conditions</a>')
+        ),
+        '#required' => TRUE
+    );
     $form['submit'] = array(
         '#type' => 'submit',
         '#value' => t('Submit')
     );
     return $form;
+}
+
+function osdag_workshop_booking_form_validate($form, &form_state)
+{
+    return;
+}
+
+function osdag_workshop_booking_form_submit($form, &form_state)
+{
+    return;
 }
