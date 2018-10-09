@@ -336,12 +336,12 @@ function osdag_workshop_booking_form($form, &$form_state)
     return $form;
 }
 
-function osdag_workshop_booking_form_validate($form, &form_state)
+function osdag_workshop_booking_form_validate($form, &$form_state)
 {
     return;
 }
 
-function osdag_workshop_booking_form_submit($form, &form_state)
+function osdag_workshop_booking_form_submit($form, &$form_state)
 {
     return;
 }
