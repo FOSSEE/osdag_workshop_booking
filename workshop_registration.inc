@@ -94,14 +94,14 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#type' => 'textfield',
         '#title' => t('Official (Institute/Company) Email address'),
         '#size' => 50,
-        '#value' => '',
+        '#required' => TRUE,
         '#disabled' => False
     );
     $form['organization_info']['institute_company_address'] = array(
         '#type' => 'textarea',
         '#title' => t('Address of the Institute/Company'),
         '#size' => 50,
-        '#maxlength' => 50,
+        '#maxlength' => 100,
         '#required' => TRUE
     );
     $form['organization_info']['city_district'] = array(
@@ -116,6 +116,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#title' => t('State'),
         '#options' => osdag_workshop_booking_list_of_states(),
         '#validated' => TRUE,
+        '#required' => TRUE,
         '#states' => array(
             'visible' => array(
                 ':input[name="country"]' => array(
@@ -204,7 +205,6 @@ function osdag_workshop_booking_form($form, &$form_state)
             )
         ),
         '#default_value' => '',
-        '#required' => TRUE
     );
     $form['workshop_info']['checklist_group']['if_yes_2'] = array(
         '#type' => 'select',
@@ -243,10 +243,8 @@ function osdag_workshop_booking_form($form, &$form_state)
                 ':input[name="workshop_info[checklist_group][is_computer_lab_available]"]' => array('value' => 'No'),
             )
         ),
-        '#default_value' => '',
-        '#required' => TRUE
     );
-    $form['workshop_info']['checklist_group']['if_no_1'] = array(
+    $form['workshop_info']['checklist_group']['if_no_2'] = array(
         '#type' => 'select',
         '#title' => t('All the participants should be accommodated in a single room with audio-visual projection facilities.'),
         '#options' => array("Agree" => "Agree",
@@ -256,8 +254,6 @@ function osdag_workshop_booking_form($form, &$form_state)
                 ':input[name="workshop_info[checklist_group][is_computer_lab_available]"]' => array('value' => 'No'),
             )
         ),
-        '#default_value' => '',
-        '#required' => TRUE
     );
     $form['workshop_info']['volunteers'] = array(
         '#type' => 'textfield',
@@ -306,7 +302,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#type' => 'textarea',
         '#title' => t('What is the proposed travel arrangement for the Osdag resource people'),
         '#size' => 30,
-        '#maxlength' => 6,
+        '#maxlength' => 100,
         '#required' => TRUE,
         '#attributes' => array(
             'placeholder' => 'Enter the proposed travel arrangement for the Osdag resource people....'
@@ -350,29 +346,25 @@ function osdag_workshop_booking_form_validate($form, &$form_state)
         form_set_error('designation', t('Allowed only characters'));
     if(strlen($v['organization_info']['institute_company']) < 0 || $v['organization_info']['institute_company'] > 30)
         form_set_error('institute_company', t('Institute/company name length is invalid'));
-    if(strlen($v['organization_info']['institute_company_address']) < 10 ||
-    strlen($v['organization_info']['institute_company_address']) > 100){
+    //var_dump(strlen($v['organization_info']['institute_company_address']));die;
+    if((strlen($v['organization_info']['institute_company_address']) > 10) ||
+    (strlen($v['organization_info']['institute_company_address']) < 100)){
         $v['organization_info']['institute_company_address'] = trim($v['organization_info']['institute_company_address']);
         }else{
             form_set_error('institute_company_address', t('Address length is invalid'));
         }
-    if($v['workshop_type']['participant_type'] == "Others"){
-        if(trim($v['if_others']) == ""){
-            form_set_error('if_others', t('Please specify others'));
-        }
-    }
-    if($v['workshop_type']['checklist_group']['available_computer'] =="Yes"){
-        if(trim($v['workshop_type']['checklist_group']['if_yes_1']) == ""){
+    if($v['workshop_info']['checklist_group']['is_computer_lab_available'] == "Yes"){
+        if(trim($v['workshop_info']['checklist_group']['if_yes_1']) == ""){
             form_set_error('if_yes_1', t('Please enter value'));
         }
-        if($v['workshop_type']['checklist_group']['if_yes_2'] == ""){
+        if($v['workshop_info']['checklist_group']['if_yes_2'] == ""){
             form_set_error('if_yes_2', t('Please select'));
         }
-        if($v['workshop_type']['checklist_group']['if_yes_3'] == ""){
+        if($v['workshop_info']['checklist_group']['if_yes_3'] == ""){
             form_set_error('if_yes_3', t('Please select'));
         }
     }
-    if($v['workshop_type']['checklist_group']['available_computer'] =="No"){
+    if($v['workshop_type']['checklist_group']['is_computer_lab_available'] =="No"){
         if($v['workshop_type']['checklist_group']['if_no_1'] == ""){
             form_set_error('if_yes_1', t('Please select'));
         }
@@ -382,59 +374,71 @@ function osdag_workshop_booking_form_validate($form, &$form_state)
     }
     if (!preg_match('/^[0-9]{0,2}$/', $form_state['values']['volunteers']))
         form_set_error('volunteers', t('Invalid number of volunteer'));
+    
 }
 
 function osdag_workshop_booking_form_submit($form, &$form_state)
 {
     global $user;
     $v = $form_state['values'];
-    $query = "INSERT INTO 'osdag_workshop_booking_proposal' ('uid', 'title',
-            'fname', 'lname', 'designation', 'email_id', 'contact_no',
-            'institute_company', 'address_of_institute_company', 'org_email',
-            'city_district', 'indian_state', 'pincode', 'workshop_type',
-            'exp_number_of_participent', 'participant_type', 'if_others',
-            'available_computer', 'if_yes_1', 'if_yes_2', 'if_yes_3', 'if_no_1',
-            'if_no_2', 'volunteers', 'from_w_date', 'end_w_date',
-            'travel_arrangement', 'how_did_you_here')
-            VALUES(
-            ':uid', ':title', ':fname', ':lname', ':designation', ':email_id',
-            ':contact_no', ':institute_company',
-            ':address_of_institute_company',':org_email', ':city_district',
-            ':indian_state', ':pincode', ':workshop_type',
-            ':exp_number_of_participent', ':participant_type', ':if_others',
-            ':available_computer', ':if_yes_1', ':if_yes_2', ':if_yes_3',
-            ':if_no_1', ':if_no_2', ':volunteers', ':from_w_date',
-            ':end_w_date', ':travel_arrangement', ':how_did_you_here')";
+ /* Other for suggestions */
+    if (isset($_POST['workshop_info']['participant_type']))
+    {
+        if (!($v['workshop_info']['if_others']))
+        {
+            $participant_type = implode(", ", $_POST['workshop_info']['participant_type']);
+            $v['participant_type'] = $participant_type;
+        } 
+        else
+        {
+            $participant_type = implode(", ", $_POST['workshop_info']['participant_type']);
+           $v['participant_type'] = $participant_type . "-" . " " . $v['workshop_info']['if_others'];
+        }
+    }
+    $query = "INSERT INTO osdag_workshop_booking_proposal (uid,title,fname,
+                lname,designation,email_id,contact_no,institute_company,
+                address_of_institute_company,org_email,city_district,
+                indian_state,pincode,workshop_type,exp_number_of_participent,
+                participant_type,available_computer,if_yes_1,if_yes_2,
+                if_yes_3,if_no_1,if_no_2,volunteers,from_w_date,end_w_date,
+                travel_arrangement,how_did_you_here
+                ) VALUES(
+                :uid,:title,:fname,:lname,:designation,:email_id,:contact_no,
+                :institute_company,:address_of_institute_company,:org_email,
+                :city_district,:indian_state,:pincode,:workshop_type,
+                :exp_number_of_participent,:participant_type,
+                :available_computer,:if_yes_1,:if_yes_2,:if_yes_3,:if_no_1,
+                :if_no_2,:volunteers,:from_w_date,:end_w_date,
+                :travel_arrangement,:how_did_you_here)";
 
     $args = array(
         ':uid' => $user->uid,
-        ':title' => $v['name_title'],
-        ':fname' => $v['fname'],
-        ':lname' => $v['lname'],
-        ':designation' => $v['designation'],
-        ':email_id' => $v['email_id'],
-        ':contact_no' => $v['contact_no'],
-        ':institute_company' => $v['institute_company'],
-        ':address_of_institute_company' => $v['institute_company_address'],
-        ':org_email' => $v['alt_email_id'],
-        ':city_district' => $v['city_district'],
-        ':indian_state' => $v['all_state'],
-        ':pincode' => $v['pincode'],
-        ':workshop_type' => $v['workshop_type'],
-        ':exp_number_of_participent' => $v['expected_number_of_participants'],
+        ':title' => $v['personal_info']['name_title'],
+        ':fname' => ucfirst(strtolower($v['personal_info']['fname'])),
+        ':lname' => ucfirst(strtolower($v['personal_info']['lname'])),
+        ':designation' => ucwords($v['personal_info']['designation']),
+        ':email_id' => $v['personal_info']['email_id'],
+        ':contact_no' => $v['personal_info']['contact_no'],
+        ':institute_company' => ucwords($v['organization_info']['institute_company']),
+        ':address_of_institute_company' => $v['organization_info']['institute_company_address'],
+        ':org_email' => $v['organization_info']['alt_email_id'],
+        ':city_district' => ucwords($v['organization_info']['city_district']),
+        ':indian_state' => ucwords($v['organization_info']['all_state']),
+        ':pincode' => $v['organization_info']['pincode'],
+        ':workshop_type' => $v['workshop_info']['workshop_type'],
+        ':exp_number_of_participent' => $v['workshop_info']['expected_number_of_participants'],
         ':participant_type' => $v['participant_type'],
-        ':if_others' => $v['if_others'],
-        ':available_computer' => $v['available_computer'],
-        ':if_yes_1' => $v['if_yes_1'],
-        ':if_yes_2' => $v['if_yes_2'],
-        ':if_yes_3' => $v['if_yes_3'],
-        ':if_no_1' => $v['if_no_1'],
-        ':if_no_2' => $v['if_no_2'],
-        ':volunteers' => $v['volunteers'],
-        ':from_w_date' => $v['start_date'],
-        ':end_w_date' => $v['end_date'],
-        ':travel_arrangement' => $v['travel_arrangement'],
-        ':how_did_you_here' => $v['how_did_you_here'],
+        ':available_computer' => $v['workshop_info']['checklist_group']['is_computer_lab_available'],
+        ':if_yes_1' => ucwords($v['workshop_info']['checklist_group']['if_yes_1']),
+        ':if_yes_2' => $v['workshop_info']['checklist_group']['if_yes_2'],
+        ':if_yes_3' => $v['workshop_info']['checklist_group']['if_yes_3'],
+        ':if_no_1' => $v['workshop_info']['checklist_group']['if_no_1'],
+        ':if_no_2' => $v['workshop_info']['checklist_group']['if_no_2'],
+        ':volunteers' => $v['workshop_info']['volunteers'],
+        ':from_w_date' => $v['workshop_info']['checklist_group']['suggested_date']['start_date'],
+        ':end_w_date' => $v['workshop_info']['checklist_group']['suggested_date']['end_date'],
+        ':travel_arrangement' => ucwords($v['workshop_info']['proposed_travel_arrangement']),
+        ':how_did_you_here' => $v['workshop_info']['how_did_you_here'],
     );
         $result = db_query($query, $args, array(
             'return' => Database::RETURN_INSERT_ID
