@@ -19,6 +19,55 @@ function osdag_workshop_booking_menu()
         'type' => MENU_NORMAL_ITEM,
         'file' => 'workshop_registration.inc'
     );
+    $items['osdag-workshop-booking/manage-proposal'] = array(
+        'title' => 'Osdag Workshop Registration Pending Proposal',
+        'description' => 'Osdag Workshop Registration Pending Proposal',
+        'page callback' => '_proposal_pending',
+        'page arguments' => array(
+            'osdag_workshop_booking_form'
+        ),
+        'access arguments' => array(
+            'approve workshop proposal'
+        ),
+        'file' => 'workshop_registration_process.inc'
+    );
+    $items['osdag-workshop-booking/manage-proposal/pending'] = array(
+        'title' => 'Pending Proposals',
+        'description' => 'Pending Proposals Queue',
+        'page callback' => '_proposal_pending',
+        'access callback' => 'user_access',
+        'access arguments' => array(
+            'approve workshop proposal'
+        ),
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+        'weight' => 1,
+        'file' => 'workshop_registration_process.inc'
+    );
+    $items['osdag-workshop-booking/manage-proposal/all'] = array(
+        'title' => 'All Proposals',
+        'description' => 'All Proposals',
+        'page callback' => '_proposal_all',
+        'access callback' => 'user_access',
+        'access arguments' => array(
+            'approve workshop proposal'
+        ),
+        'type' => MENU_LOCAL_TASK,
+        'weight' => 2,
+        'file' => 'workshop_registration_process.inc'
+    );
+    $items['osdag-workshop-booking/manage-proposal/approve'] = array(
+        'title' => 'Osdag Workshop Registration Proposal Approval',
+        'description' => 'Osdag Workshop Registration Proposal Approval',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array(
+            'osdag_workshop_booking_proposal_approval_form'
+        ),
+        'access arguments' => array(
+            'approve workshop proposal'
+        ),
+        'type' => MENU_CALLBACK,
+        'file' => 'workshop_registration_process.inc'
+    );
     return $items;
 }
 
@@ -32,6 +81,10 @@ function osdag_workshop_booking_permission()
             "title" => t("Workshop Booking Proposal Form"),
             "description" => t("Workshop Booking Proposal Form.")
         ),
+        "approve workshop proposal" => array(
+            "title" => t("Workshop Booking Proposal Form approve"),
+            "description" => t("Workshop Booking Proposal Form approve.")
+        ),
     );
 }
 
@@ -39,7 +92,6 @@ function osdag_workshop_booking_list_of_states()
 {
     $query = db_select('list_states_of_india');
     $query->fields('list_states_of_india');
-    //$query->orderBy('', '');
     $states_list = $query->execute();
     while ($states_list_data = $states_list->fetchObject())
     {
