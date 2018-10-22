@@ -11,18 +11,16 @@ function osdag_workshop_booking_form($form, &$form_state)
     $query->range(0, 1);
     $proposal_q = $query->execute();
     $proposal_data = $proposal_q->fetchObject();
-  /*  if ($proposal_data)
+    if ($proposal_data)
     {
-        if ($proposal_data->approval_status == 0 ||
-        $proposal_data->approval_status == 1)
+        if ($proposal_data->proposal_status == 0)
         {
             drupal_set_message(t('We have already received your proposal.'),
             'status');
             drupal_goto('');
             return;
         } //$proposal_data->approval_status == 0 ||
-        $proposal_data->approval_status == 1
-    } //$proposal_data*/
+    } //$proposal_data
     $form['#attributes'] = array(
         'enctype' => "multipart/form-data"
     );
@@ -210,9 +208,9 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#maxlength' => 50,
         '#states' => array(
             'visible' => array(
-                ':input[name="workshop_info[checklist_group]
-                [is_computer_lab_available]"]' =>
-                    array("value" => "Yes"),
+                ':input[name=
+                "workshop_info[checklist_group][is_computer_lab_available]"]'
+                => array("value" => "Yes"),
             )
         ),
         '#default_value' => '',
@@ -224,9 +222,9 @@ function osdag_workshop_booking_form($form, &$form_state)
                             "No" => "No"),
         '#states' => array(
             'visible' => array(
-                ':input[name="workshop_info[checklist_group]
-                [is_computer_lab_available]"]' =>
-                    array('value' => 'Yes'),
+                ':input[name=
+                "workshop_info[checklist_group][is_computer_lab_available]"]'
+                =>array('value' => 'Yes'),
             )
         ),
         '#default_value' => '',
@@ -239,8 +237,9 @@ function osdag_workshop_booking_form($form, &$form_state)
                             "No" => "No"),
         '#states' => array(
             'visible' => array(
-                ':input[name="workshop_info[checklist_group]
-                [is_computer_lab_available]"]' => array('value' => 'Yes'),
+                ':input[name=
+                "workshop_info[checklist_group][is_computer_lab_available]"]'
+                => array('value' => 'Yes'),
             )
         ),
         '#default_value' => '',
@@ -254,8 +253,9 @@ function osdag_workshop_booking_form($form, &$form_state)
                             "Disagree" => "Disagree"),
         '#states' => array(
             'visible' => array(
-                ':input[name="workshop_info[checklist_group]
-                [is_computer_lab_available]"]' => array('value' => 'No'),
+                ':input[name=
+                "workshop_info[checklist_group][is_computer_lab_available]"]'
+                => array('value' => 'No'),
             )
         ),
     );
@@ -267,8 +267,9 @@ function osdag_workshop_booking_form($form, &$form_state)
                             "Disagree" => "Disagree"),
         '#states' => array(
             'visible' => array(
-                ':input[name="workshop_info[checklist_group]
-                [is_computer_lab_available]"]' => array('value' => 'No'),
+                ':input[name=
+                "workshop_info[checklist_group][is_computer_lab_available]"]'
+                => array('value' => 'No'),
             )
         ),
     );
@@ -301,7 +302,9 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#date_increment' => 0,
         '#date_year_range' => $cur_year.':+0',
         '#datepicker_options' => array(
-            'maxDate' => 0
+            'minDate' => date("d-m-y"),
+            'maxDate' => 0,
+            'dateFormat' => date_popup_format_to_popup('d-m-Y'),
         ),
     );
     $form['workshop_info']['checklist_group']['suggested_date']['end_date'] =
@@ -312,10 +315,11 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#description' => '',
         '#default_value' => '',
         '#date_format' => 'd-m-Y',
-        '#date_increment' => 0,
+        '#date_increment' => 1,
         '#date_year_range' => $cur_year.':+0',
         '#datepicker_options' => array(
-            'maxDate' => 0
+            'maxDate' => 0,
+            'dateFormat' => date_popup_format_to_popup('d-m-Y'),
         ),
     );
     $form['workshop_info']['proposed_travel_arrangement'] = array(
@@ -393,17 +397,22 @@ function osdag_workshop_booking_form_validate($form, &$form_state)
             form_set_error('if_yes_3', t('Please select'));
         }
     }
-    if($v['workshop_type']['checklist_group']['is_computer_lab_available'] ==
+    if($v['workshop_info']['checklist_group']['is_computer_lab_available'] ==
     "No"){
-        if($v['workshop_type']['checklist_group']['if_no_1'] == ""){
+        if($v['workshop_info']['checklist_group']['if_no_1'] == ""){
             form_set_error('if_yes_1', t('Please select'));
         }
-        if($v['workshop_type']['checklist_group']['if_no_2'] == ""){
+        if($v['workshop_info']['checklist_group']['if_no_2'] == ""){
             form_set_error('if_yes_2', t('Please select'));
         }
     }
-    if (!preg_match('/^[0-9]{0,2}$/', $form_state['values']['volunteers']))
+    if (!preg_match('/^[0-9]{0,2}$/',
+        $form_state['values']['workshop_info']['volunteers']))
         form_set_error('volunteers', t('Invalid number of volunteer'));
+    if($v['workshop_info']['workshop_type'] == '1-day training workshop'){
+    $v['workshop_info']['checklist_group']['suggested_date']['end_date'] =
+    $v['workshop_info']['checklist_group']['suggested_date']['start_date'];
+    }
 }
 
 function osdag_workshop_booking_form_submit($form, &$form_state)
@@ -434,7 +443,7 @@ function osdag_workshop_booking_form_submit($form, &$form_state)
                 exp_number_of_participent,participant_type,available_computer,
                 if_yes_1,if_yes_2,if_yes_3,if_no_1,if_no_2,volunteers,
                 from_w_date,end_w_date,travel_arrangement,how_did_you_here,
-                proposal_status,approval_date) VALUES(
+                proposal_status,approval_date,disapprove_message) VALUES(
                 :uid,:creation_date,:title,:fname,:lname,:designation,:email_id,
                 :contact_no,:institute_company,:address_of_institute_company,
                 :org_email,:city_district,:indian_state,:pincode,:workshop_type,
@@ -442,7 +451,7 @@ function osdag_workshop_booking_form_submit($form, &$form_state)
                 :available_computer,:if_yes_1,:if_yes_2,:if_yes_3,:if_no_1,
                 :if_no_2,:volunteers,:from_w_date,:end_w_date,
                 :travel_arrangement,:how_did_you_here,:proposal_status,
-                :approval_date)";
+                :approval_date, :disapprove_message)";
 
     $args = array(
         ':uid' => $user->uid,
@@ -484,11 +493,13 @@ function osdag_workshop_booking_form_submit($form, &$form_state)
         ['proposed_travel_arrangement']),
         ':how_did_you_here' => $v['workshop_info']['how_did_you_here'],
         ':proposal_status' => 0,
-        ':approval_date' => time()
+        ':approval_date' => time(),
+        ':disapprove_message' => 'none',
     );
         $result = db_query($query, $args, array(
             'return' => Database::RETURN_INSERT_ID
         ));
+    $proposal_id = $result;
         /* sending email */
     $email_to = $user->mail;
     $from = variable_get('osdag_workshop_booking_from_email', '');
