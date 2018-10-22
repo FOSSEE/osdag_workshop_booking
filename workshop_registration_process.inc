@@ -26,9 +26,9 @@ function _proposal_pending()
             $pending_data->workshop_type,
             $pending_data->from_w_date.' to '. $pending_data->end_w_date,
             l('Approve', 'osdag-workshop-booking/manage-proposal/approve/' .
-            $pending_data->id) . ' | ' .
-            l('Edit', 'osdag-workshop-booking/manage-proposal/edit/' .
-            $pending_data->id)
+            $pending_data->id) //. ' | ' .
+            /*l('Edit', 'osdag-workshop-booking/manage-proposal/edit/' .
+            $pending_data->id)*/
         );
         $i++;
     } //$pending_data = $pending_q->fetchObject()
@@ -58,15 +58,18 @@ function _proposal_all()
     /* get pending proposals to be approved */
     $proposal_rows = array();
     $proposal_q = db_query("SELECT * FROM {osdag_workshop_booking_proposal} 
-                    WHERE proposal_status = 0 ORDER BY id DESC");
+                     ORDER BY id DESC");
     $i=1;
     while ($proposal_data = $proposal_q->fetchObject())
     {
         $proposal_status = '';
+        $action = '';
         switch ($proposal_data->proposal_status)
         {
             case 0:
                 $proposal_status = 'Pending';
+                $action = l('Approve', 'osdag-workshop-booking/manage-proposal/approve/' .
+            $proposal_data->id);
                 break;
             case 1:
                 $proposal_status = 'Approved';
@@ -92,10 +95,7 @@ function _proposal_all()
             $proposal_data->workshop_type,
             $proposal_data->from_w_date.' to '. $proposal_data->end_w_date,
             $proposal_status,
-            l('Approve', 'osdag-workshop-booking/manage-proposal/approve/' .
-            $proposal_data->id) . ' | ' .
-            l('Edit', 'osdag-workshop-booking/manage-proposal/edit/' .
-            $proposal_data->id)
+            $action,
         );
         $i++;
     } //$pending_data = $pending_q->fetchObject()
@@ -336,12 +336,12 @@ function osdag_workshop_booking_proposal_approval_form($form, &$form_state)
         '#value' => t('Submit')
     );
     $form['cancel'] = array(
-        '#type' => 'button',
-        '#value' => t(Back)
+        '#type' => 'item',
+        '#markup' => "<input type='button' class='button-user' value='Back' onclick='window.history.go(-1); return false;'/>",
     );
     return $form;
 }
-function osdag_workshop_booking_proposal_form_submit($form, &$form_state)
+function osdag_workshop_booking_proposal_approval_form_submit($form, &$form_state)
 {
     global $user;
         /* get current proposal */
@@ -406,7 +406,7 @@ function osdag_workshop_booking_proposal_form_submit($form, &$form_state)
         the dis-approval.', 'error');
         drupal_goto('osdag-workshop-booking/manage-proposal');
         return;
-    }elseif($form_state['values']['approve'] == 'approve'){
+    }elseif($form_state['values']['approve_disapprove'] == 'approve'){
         db_query("UPDATE {osdag_workshop_booking_proposal} SET approver_uid =
         :approver_uid, approval_date = :approval_date,
         proposal_status = 1, disapprove_message = :message WHERE id = :id",
