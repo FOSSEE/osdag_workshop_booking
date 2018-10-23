@@ -68,6 +68,20 @@ function osdag_workshop_booking_menu()
         'type' => MENU_CALLBACK,
         'file' => 'workshop_registration_process.inc'
     );
+	/* ADMIN SETTINGS */
+	$items['admin/settings/osdag-workshop-booking'] = array(
+		'title' => 'Osdag workshop booking Settings',
+		'description' => 'Osdag Workshop Booking Settings',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array(
+			'osdag_workshop_booking_settings_form'
+		),
+		'access arguments' => array(
+			'administrator osdag workshop booking'
+		),
+		'type' => MENU_NORMAL_ITEM,
+		'file' => 'settings.inc'
+	);
     return $items;
 }
 
@@ -84,6 +98,10 @@ function osdag_workshop_booking_permission()
         "approve workshop proposal" => array(
             "title" => t("Workshop Booking Proposal Form approve"),
             "description" => t("Workshop Booking Proposal Form approve.")
+        ),
+        "administrator osdag workshop booking" => array(
+            "title" => t("Workshop Booking administrator"),
+            "description" => t("Workshop Booking Proposal")
         ),
     );
 }
