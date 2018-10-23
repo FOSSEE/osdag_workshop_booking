@@ -1,5 +1,40 @@
 <?php
 /* workshop booking registration form */
+$date_picker_js = "
+(function($)  {
+        Drupal.behaviors.form_modif = {
+  attach: function (context, settings) {
+        $('input#edit-workshop-info-checklist-group-suggested-date-start-date-datepicker-popup-0').change(function(){
+        var field_date1 = $('input#edit-workshop-info-checklist-group-suggested-date-start-date-datepicker-popup-0').val();
+        console.log(field_date1);
+        var str_date_array = field_date1.split('-');
+        day = +str_date_array[0] + +1;
+        month = str_date_array[1];
+        year = str_date_array[2];
+        field_date1_next = day+'-'+month+'-'+year;
+            console.log(field_date1);
+        if($('#edit-workshop-info-workshop-type').val() == '2-day training workshop'){
+            if(day > 31 ){
+                alert('Enter correct To date');
+                $('input#edit-workshop-info-checklist-group-suggested-date-end-date-datepicker-popup-0').val('');
+            }else{
+                alert('Check the To date');
+                $('input#edit-workshop-info-checklist-group-suggested-date-end-date-datepicker-popup-0').val(field_date1_next);
+            }
+        }else{
+            $('input#edit-workshop-info-checklist-group-suggested-date-end-date-datepicker-popup-0').val(field_date1);
+        }
+    });
+  }
+};
+})(jQuery);
+";
+drupal_add_js($date_picker_js,array(
+  'type' => 'inline',
+  'scope' => 'footer',
+  'weight' => 5,
+));
+
 function osdag_workshop_booking_form($form, &$form_state)
 {
     global $user;
@@ -302,8 +337,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#date_increment' => 0,
         '#date_year_range' => $cur_year.':+0',
         '#datepicker_options' => array(
-            'minDate' => date("d-m-y"),
-            'maxDate' => 0,
+            'minDate' => 10,
             'dateFormat' => date_popup_format_to_popup('d-m-Y'),
         ),
     );
@@ -318,7 +352,6 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#date_increment' => 1,
         '#date_year_range' => $cur_year.':+0',
         '#datepicker_options' => array(
-            'maxDate' => 0,
             'dateFormat' => date_popup_format_to_popup('d-m-Y'),
         ),
     );
@@ -409,10 +442,6 @@ function osdag_workshop_booking_form_validate($form, &$form_state)
     if (!preg_match('/^[0-9]{0,2}$/',
         $form_state['values']['workshop_info']['volunteers']))
         form_set_error('volunteers', t('Invalid number of volunteer'));
-    if($v['workshop_info']['workshop_type'] == '1-day training workshop'){
-    $v['workshop_info']['checklist_group']['suggested_date']['end_date'] =
-    $v['workshop_info']['checklist_group']['suggested_date']['start_date'];
-    }
 }
 
 function osdag_workshop_booking_form_submit($form, &$form_state)
