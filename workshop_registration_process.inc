@@ -400,8 +400,8 @@ function osdag_workshop_booking_proposal_approval_form_submit($form, &$form_stat
             'Cc' => $cc,
             'Bcc' => $bcc
         );
-       // if (!drupal_mail('osdag_workshop_booking', 'proposal_disapproved', $email_to, language_default(), $params, $from, TRUE))
-       //     drupal_set_message('Error sending email message.', 'error');
+       if (!drupal_mail('osdag_workshop_booking', 'proposal_disapproved', $email_to, language_default(), $params, $from, TRUE))
+            drupal_set_message('Error sending email message.', 'error');
         drupal_set_message('Proposal dis-approved. User has been notified of
         the dis-approval.', 'error');
         drupal_goto('osdag-workshop-booking/manage-proposal');
@@ -434,8 +434,8 @@ function osdag_workshop_booking_proposal_approval_form_submit($form, &$form_stat
             'Cc' => $cc,
             'Bcc' => $bcc
         );
-       // if (!drupal_mail('osdag_workshop_booking', 'proposal_approved', $email_to, language_default(), $params, $from, TRUE))
-       //     drupal_set_message('Error sending email message.', 'error');
+        if (!drupal_mail('osdag_workshop_booking', 'proposal_approved', $email_to, language_default(), $params, $from, TRUE))
+            drupal_set_message('Error sending email message.', 'error');
         drupal_set_message('Proposal approved. User has been notified of the
         approval', 'status');
         drupal_goto('osdag-workshop-booking/manage-proposal');
