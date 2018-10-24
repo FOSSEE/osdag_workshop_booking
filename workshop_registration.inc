@@ -1,4 +1,5 @@
 <?php
+require_once('workshop_registration_email.inc');
 /* workshop booking registration form */
 $date_picker_js = "
 (function($)  {
@@ -88,7 +89,7 @@ function osdag_workshop_booking_form($form, &$form_state)
     );
     $form['personal_info']['lname'] = array(
         '#type' => 'textfield',
-        '#title' => t('last Name'),
+        '#title' => t('Last Name'),
         '#size' => 30,
         '#maxlength' => 50,
         '#required' => TRUE
@@ -211,7 +212,6 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#type' => 'textfield',
         '#size' => 30,
         '#maxlength' => 30,
-        '#required' => TRUE,
         '#states' => array(
                 'visible' => array(
                     ':input[name="workshop_info[participant_type][Others]"]' =>
@@ -539,7 +539,7 @@ function osdag_workshop_booking_form_submit($form, &$form_state)
     $params['proposal_received']['headers'] = array(
         'From' => $from,
         'MIME-Version' => '1.0',
-        'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+        'Content-Type' => 'text/html; charset=UTF-8; format=flowed; delsp=yes',
         'Content-Transfer-Encoding' => '8Bit',
         'X-Mailer' => 'Drupal',
         'Cc' => $cc,
