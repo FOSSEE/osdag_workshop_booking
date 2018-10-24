@@ -1,4 +1,5 @@
 <?php
+require_once('workshop_registration_email.inc');
 /**
  * Implementation of hook_menu().
  */
