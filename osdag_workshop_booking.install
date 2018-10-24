@@ -1,0 +1,20 @@
+<?php
+// $Id$
+/**
+ * Implementation of hook_install().
+ */
+function osdag_workshop_booking_install()
+{
+    variable_set('mail_system', array('default-system' => 'DefaultMailSystem', 'osdag_workshop_booking' => 'WorkshopMailSystem'));
+}
+/**
+ * Implementation of hook_uninstall().
+ */
+function osdag_workshop_booking_uninstall()
+{
+
+//Unset module keys in variable mail_system
+    $mail_system = variable_get('mail_system', array('default-system' => 'DefaultMailSystem', 'osdag_workshop_booking' => 'WorkshopMailSystem'));
+    unset($mail_system['osdag_workshop_booking']);
+    variable_set('mail_system', $mail_system);
+}
