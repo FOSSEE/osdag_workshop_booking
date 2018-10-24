@@ -9,6 +9,7 @@ textbook companion proposal table column "proposal_status" field values means
 4 = 'External';
 5 = 'Unknown';
 */
+require_once('workshop_registration_email.inc');
 function _proposal_pending()
 {
     /* get pending proposals to be approved */
@@ -352,17 +353,7 @@ function osdag_workshop_booking_proposal_approval_form_submit($form, &$form_stat
     ));
     if ($result)
     {
-        if ($row = $result->fetchObject())
-        {
-            /* everything ok */
-        } //$row = $result->fetchObject()
-        else
-        {
-            drupal_set_message(t('Invalid proposal selected. Please try again.'
-            ), 'error');
-            drupal_goto('osdag-workshop-booking/manage-proposal');
-            return;
-        }
+        $row = $result->fetchObject();
     } //$result
     else
     {
@@ -393,19 +384,22 @@ function osdag_workshop_booking_proposal_approval_form_submit($form, &$form_stat
         $params['proposal_disapproved']['headers'] = array(
             'From' => $from,
             'MIME-Version' => '1.0',
-            'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; 
-            delsp=yes',
+            'Content-Type' => 'text/html; charset=UTF-8; format=flowed; delsp=yes',
             'Content-Transfer-Encoding' => '8Bit',
             'X-Mailer' => 'Drupal',
             'Cc' => $cc,
             'Bcc' => $bcc
         );
-       if (!drupal_mail('osdag_workshop_booking', 'proposal_disapproved', $email_to, language_default(), $params, $from, TRUE))
+    if (!drupal_mail('osdag_workshop_booking', 'proposal_disapproved', $email_to,
+    language_default(), $params, $from, TRUE))
+        if (!drupal_mail('osdag_workshop_booking', 'proposal_disapproved',
+             $email_to, language_default(), $params, $from, TRUE)){
+        }else{
             drupal_set_message('Error sending email message.', 'error');
+        }
         drupal_set_message('Proposal dis-approved. User has been notified of
-        the dis-approval.', 'error');
+        the dis-approval.', 'status');
         drupal_goto('osdag-workshop-booking/manage-proposal');
-        return;
     }elseif($form_state['values']['approve_disapprove'] == 'approve'){
         db_query("UPDATE {osdag_workshop_booking_proposal} SET approver_uid =
         :approver_uid, approval_date = :approval_date,
@@ -427,22 +421,23 @@ function osdag_workshop_booking_proposal_approval_form_submit($form, &$form_stat
         $params['proposal_approved']['headers'] = array(
             'From' => $from,
             'MIME-Version' => '1.0',
-            'Content-Type' => 'text/plain; charset=UTF-8; format=flowed;
-            delsp=yes',
+            'Content-Type' => 'text/html; charset=UTF-8; format=flowed; delsp=yes',
             'Content-Transfer-Encoding' => '8Bit',
             'X-Mailer' => 'Drupal',
             'Cc' => $cc,
             'Bcc' => $bcc
         );
-        if (!drupal_mail('osdag_workshop_booking', 'proposal_approved', $email_to, language_default(), $params, $from, TRUE))
+        if (!drupal_mail('osdag_workshop_booking', 'proposal_approved',
+            $email_to, language_default(), $params, $from, TRUE)){
             drupal_set_message('Error sending email message.', 'error');
+        }
         drupal_set_message('Proposal approved. User has been notified of the
         approval', 'status');
         drupal_goto('osdag-workshop-booking/manage-proposal');
-        return;
     }else{
         drupal_set_message('Something went wrong. Please contact to 
         administrator', 'error');
+        drupal_goto('osdag-workshop-booking/manage-proposal');
         return;
     }
 
