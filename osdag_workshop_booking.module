@@ -3,6 +3,7 @@ require_once('workshop_registration_email.inc');
 /**
  * Implementation of hook_menu().
  */
+variable_set('mail_system', array('default-system' => 'DefaultMailSystem', 'osdag_workshop_booking' => 'WorkshopMailSystem'));
 function osdag_workshop_booking_menu()
 {
     $items = array();
