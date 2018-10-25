@@ -111,8 +111,8 @@ function osdag_workshop_booking_form($form, &$form_state)
     $form['personal_info']['contact_no'] = array(
         '#type' => 'textfield',
         '#title' => t('Contact No.'),
-        '#size' => 30,
-        '#maxlength' => 15,
+        '#size' => 10,
+        '#maxlength' => 10,
         '#required' => TRUE
     );
     $form['organization_info'] = array(
