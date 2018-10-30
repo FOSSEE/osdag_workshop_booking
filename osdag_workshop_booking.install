@@ -1,10 +1,56 @@
 <?php
 // $Id$
 /**
+  * Implement hook_enable()
+  */
+function osdag_workshop_booking_enable() {
+  //Check if table exists, if not install the schema.
+  if((db_table_exists('list_states_of_india') == FALSE) || (db_table_exists('osdag_workshop_booking_proposal') == FALSE)) {
+    drupal_install_schema('osdag_workshop_booking');
+    _osdag_workshop_booking_default_insert('Andhra Pradesh');
+    _osdag_workshop_booking_default_insert('Arunachal Pradesh');
+    _osdag_workshop_booking_default_insert('Assam');
+    _osdag_workshop_booking_default_insert('Bihar');
+    _osdag_workshop_booking_default_insert('Chhattisgarh');
+    _osdag_workshop_booking_default_insert('Goa');
+    _osdag_workshop_booking_default_insert('Gujarat');
+    _osdag_workshop_booking_default_insert('Haryana');
+    _osdag_workshop_booking_default_insert('Himachal Pradesh');
+    _osdag_workshop_booking_default_insert('Jammu and Kashmir');
+    _osdag_workshop_booking_default_insert('Jharkhand');
+    _osdag_workshop_booking_default_insert('Karnataka');
+    _osdag_workshop_booking_default_insert('Kerala');
+    _osdag_workshop_booking_default_insert('Madhya Pradesh');
+    _osdag_workshop_booking_default_insert('Maharashtra');
+    _osdag_workshop_booking_default_insert('Manipur');
+    _osdag_workshop_booking_default_insert('Meghalaya');
+    _osdag_workshop_booking_default_insert('Mizoram');
+    _osdag_workshop_booking_default_insert('Nagaland');
+    _osdag_workshop_booking_default_insert('Odisha(Orissa)');
+    _osdag_workshop_booking_default_insert('Punjab');
+    _osdag_workshop_booking_default_insert('Rajasthan');
+    _osdag_workshop_booking_default_insert('Sikkim');
+    _osdag_workshop_booking_default_insert('Tamil Nadu');
+    _osdag_workshop_booking_default_insert('Telangana');
+    _osdag_workshop_booking_default_insert('Tripura');
+    _osdag_workshop_booking_default_insert('Uttar Pradesh');
+    _osdag_workshop_booking_default_insert('Uttarakhand');
+    _osdag_workshop_booking_default_insert('West Bengal');
+    _osdag_workshop_booking_default_insert('Andaman and Nicobar Islands');
+    _osdag_workshop_booking_default_insert('Chandigarh');
+    _osdag_workshop_booking_default_insert('Dadra and Nagar Haveli');
+    _osdag_workshop_booking_default_insert('Daman and Diu');
+    _osdag_workshop_booking_default_insert('Lakshadweep');
+    _osdag_workshop_booking_default_insert('National Capital Territory of Delhi');
+    _osdag_workshop_booking_default_insert('Puducherry (Pondicherry)');
+  }
+}
+/**
  * Implementation of hook_install().
  */
 function osdag_workshop_booking_install()
 {
+  drupal_install_schema('osdag_workshop_booking');
     variable_set('mail_system', array('default-system' => 'DefaultMailSystem', 'osdag_workshop_booking' => 'WorkshopMailSystem'));
 }
 /**
@@ -12,6 +58,7 @@ function osdag_workshop_booking_install()
  */
 function osdag_workshop_booking_schema()
 {
+$schema = array();
 $schema['list_states_of_india'] = array(
   'description' => 'TODO: please describe this table!',
   'fields' => array(
@@ -256,15 +303,27 @@ $schema['osdag_workshop_booking_proposal'] = array(
   ),
   'primary key' => array('id'),
 );
+    return $schema;
+}
+/**
+ * Inserts default entry into list_states_of_india table
+ *
+ * @param $states of the list states of india
+ */
+function _osdag_workshop_booking_default_insert($states) {
+  $data = array(
+    'state' => $states,
+  );
+  drupal_write_record('list_states_of_india', $data);
 }
 /**
  * Implementation of hook_uninstall().
  */
 function osdag_workshop_booking_uninstall()
 {
-
+  drupal_uninstall_schema('osdag_workshop_booking');
 //Unset module keys in variable mail_system
-    $mail_system = variable_get('mail_system', array('default-system' => 'DefaultMailSystem', 'osdag_workshop_booking' => 'WorkshopMailSystem'));
-    unset($mail_system['osdag_workshop_booking']);
-    variable_set('mail_system', $mail_system);
+  $mail_system = variable_get('mail_system', array('default-system' => 'DefaultMailSystem', 'osdag_workshop_booking' => 'WorkshopMailSystem'));
+  unset($mail_system['osdag_workshop_booking']);
+  variable_set('mail_system', $mail_system);
 }
