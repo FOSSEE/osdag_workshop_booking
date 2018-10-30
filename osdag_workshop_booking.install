@@ -12,6 +12,24 @@ function osdag_workshop_booking_install()
  */
 function osdag_workshop_booking_schema()
 {
+$schema['list_states_of_india'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'not null' => TRUE,
+    ),
+    'state' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '100',
+      'not null' => TRUE,
+      'default' => 'None',
+    ),
+  ),
+  'primary key' => array('id'),
+);
     /* proposal */
 $schema['osdag_workshop_booking_proposal'] = array(
   'description' => 'TODO: please describe this table!',
