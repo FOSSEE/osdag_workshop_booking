@@ -8,6 +8,238 @@ function osdag_workshop_booking_install()
     variable_set('mail_system', array('default-system' => 'DefaultMailSystem', 'osdag_workshop_booking' => 'WorkshopMailSystem'));
 }
 /**
+ * Implementation of hook_schema().
+ */
+function osdag_workshop_booking_schema()
+{
+    /* proposal */
+$schema['osdag_workshop_booking_proposal'] = array(
+  'description' => 'TODO: please describe this table!',
+  'fields' => array(
+    'id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'serial',
+      'not null' => TRUE,
+    ),
+    'uid' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'not null' => TRUE,
+    ),
+    'creation_date' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
+    ),
+    'title' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '5',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'fname' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'lname' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'designation' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'email_id' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'contact_no' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
+    ),
+    'institute_company' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'address_of_institute_company' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '100',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'org_email' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'city_district' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'indian_state' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'pincode' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
+    ),
+    'workshop_type' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '30',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'exp_number_of_participent' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '40',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'participant_type' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '200',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'available_computer' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '10',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'if_yes_1' => array(
+      'description' => 'What is the Operating system (Windows, Linux etc.) [mention OS with configuration. Ex. Windows 10 or Ubuntu 18.04 etc',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'if_yes_2' => array(
+      'description' => 'Is there a projection facility at the computer lab?',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'if_yes_3' => array(
+      'description' => 'Are all the computers connected to the Internet?',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'if_no_1' => array(
+      'description' => 'Every participant has to have an individual computer with Osdag pre-installed in it.',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'if_no_2' => array(
+      'description' => 'All the participants should be accommodated in a single room with audio-visual projection facilities.',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'volunteers' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'from_w_date' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'end_w_date' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'travel_arrangement' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '100',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'how_did_you_here' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => TRUE,
+      'default' => 'none',
+    ),
+    'proposal_status' => array(
+      'description' => 'Prposal status is used to set the accept,reject state.',
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
+    ),
+    'approval_date' => array(
+      'description' => 'Proposal approval date',
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
+    ),
+    'approver_uid' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
+    ),
+    'disapprove_message' => array(
+      'description' => 'TODO: please describe this field!',
+      'type' => 'text',
+      'not null' => TRUE,
+    ),
+  ),
+  'primary key' => array('id'),
+);
+}
+/**
  * Implementation of hook_uninstall().
  */
 function osdag_workshop_booking_uninstall()
