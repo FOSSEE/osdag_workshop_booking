@@ -323,6 +323,7 @@ function osdag_workshop_booking_form($form, &$form_state)
     $form['workshop_info']['checklist_group']['suggested_date'] = array(
         '#type' => 'fieldset',
         '#title' => t('Suggested Date(s)'),
+        '#description' => '<b>Note:</b> Select a range of more than 2 days when the host institute/company can organize this workshop. Final dates will be decided based on mutual convenience.',
         '#tree' => TRUE,
     );
     $cur_year = date("Y");
@@ -337,7 +338,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#date_increment' => 0,
         '#date_year_range' => $cur_year.':+0',
         '#datepicker_options' => array(
-            'minDate' => 10,
+            'minDate' => 15,
             'dateFormat' => date_popup_format_to_popup('d-m-Y'),
         ),
     );
