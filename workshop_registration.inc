@@ -336,7 +336,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#default_value' => '',
         '#date_format' => 'd-m-Y',
         '#date_increment' => 0,
-        '#date_year_range' => $cur_year.':+0',
+        '#date_year_range' => $cur_year.':+5',
         '#datepicker_options' => array(
             'minDate' => 15,
             'dateFormat' => date_popup_format_to_popup('d-m-Y'),
@@ -351,7 +351,7 @@ function osdag_workshop_booking_form($form, &$form_state)
         '#default_value' => '',
         '#date_format' => 'd-m-Y',
         '#date_increment' => 1,
-        '#date_year_range' => $cur_year.':+0',
+        '#date_year_range' => $cur_year.':+5',
         '#datepicker_options' => array(
             'dateFormat' => date_popup_format_to_popup('d-m-Y'),
         ),
