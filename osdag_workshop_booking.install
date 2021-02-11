@@ -5,8 +5,9 @@
   */
 function osdag_workshop_booking_enable() {
   //Check if table exists, if not install the schema.
-  if((db_table_exists('list_states_of_india') == FALSE) || (db_table_exists('osdag_workshop_booking_proposal') == FALSE)) {
+  /*if((db_table_exists('list_states_of_india') == FALSE) || (db_table_exists('osdag_workshop_booking_proposal') == FALSE)) {
     drupal_install_schema('osdag_workshop_booking');
+  */  variable_set('mail_system', array('default-system' => 'DefaultMailSystem', 'osdag_workshop_booking' => 'WorkshopMailSystem'));
     _osdag_workshop_booking_default_insert('Andhra Pradesh');
     _osdag_workshop_booking_default_insert('Arunachal Pradesh');
     _osdag_workshop_booking_default_insert('Assam');
@@ -43,16 +44,16 @@ function osdag_workshop_booking_enable() {
     _osdag_workshop_booking_default_insert('Lakshadweep');
     _osdag_workshop_booking_default_insert('National Capital Territory of Delhi');
     _osdag_workshop_booking_default_insert('Puducherry (Pondicherry)');
-  }
+  //}
 }
 /**
  * Implementation of hook_install().
  */
-function osdag_workshop_booking_install()
+/*function osdag_workshop_booking_install()
 {
   drupal_install_schema('osdag_workshop_booking');
     variable_set('mail_system', array('default-system' => 'DefaultMailSystem', 'osdag_workshop_booking' => 'WorkshopMailSystem'));
-}
+}*/
 /**
  * Implementation of hook_schema().
  */
